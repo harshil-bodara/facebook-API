@@ -47,16 +47,22 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   const { emailorUsername, password } = req.body;
+console.log("emailorUsername",emailorUsername);
 
   try {
    
     const user = await findUserByEmailOrUsername(emailorUsername)
+    console.log("user",user);
+    console.log("password",password);
 
+    
     if (!user) {
       return res.status(401).json({ message: "Invalid email or username" });
     }
 
     const isMatch = await comparePassword(password,user.password);
+    console.log("ismatch",isMatch);
+    
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }

@@ -1,6 +1,8 @@
     const {User} = require("../models");
     const {Op}=require("sequelize");
     const findUserByEmailOrUsername=async(emailorUsername)=>{
+        console.log("emailorUsername",emailorUsername);
+        
         return await User.findOne({
             where:{
                 [Op.or]:[{email:emailorUsername},{username:emailorUsername}]

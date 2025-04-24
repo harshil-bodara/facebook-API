@@ -31,4 +31,17 @@ const updateProfile = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
 };
-module.exports={updateProfile}
+const getUserProfileData=async(req,res)=>{
+  const userId=req.user.userId
+  try {
+    const user=await findUserById(userId)
+    if(!user){
+      return res.status(404).json({message:"usernot found"})
+    }
+    res.status(200).json({message:"succesfully data get",user})
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    
+  }
+}
+module.exports={updateProfile,getUserProfileData}
