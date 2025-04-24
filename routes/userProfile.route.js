@@ -1,15 +1,18 @@
-const express = require("express");
-const { updateProfile, getUserProfileData } = require("../controllers/userProfile.controller");
-const authMiddleware = require("../middleware/auth");
-const validate = require("../middleware/validate");
-const { updateProfileSchema } = require("../validations/auth.validation");
-const upload = require("../middleware/upload");
-const setUploadFolder = require("../middleware/setupFolder");
+import express from "express";
+
+import {
+  updateProfile,
+  getUserProfileData,
+} from "../controllers/userProfile.controller.js";
+
+import authMiddleware from "../middleware/auth.js";
+import validate from "../middleware/validate.js";
+import { updateProfileSchema } from "../validations/auth.validation.js";
+import upload from "../middleware/upload.js";
 
 const userProfileRouter = express.Router();
 
 userProfileRouter.get("/profile", authMiddleware, getUserProfileData);
-
 
 userProfileRouter.put(
   "/update-profile",
@@ -19,4 +22,4 @@ userProfileRouter.put(
   updateProfile
 );
 
-module.exports = userProfileRouter;
+export default userProfileRouter;

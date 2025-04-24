@@ -1,13 +1,14 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const FriendRequest = sequelize.define(
-  "FriendRequest",
+  'FriendRequest',
   {
     friendrequest_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, // Auto-incrementing field
+      autoIncrement: true, 
       allowNull: false,
     },
     sender_id: {
@@ -21,14 +22,14 @@ const FriendRequest = sequelize.define(
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "pending", // Default status is "pending"
+      defaultValue: 'pending', 
     },
   },
   {
-    timestamps: true, // Add timestamps (created_at, updated_at)
-    underscored: true, // Use snake_case for column names
-    tableName: "friend_requests",
+    timestamps: true, 
+    underscored: true, 
+    tableName: 'friend_requests',
   }
 );
 
-module.exports = FriendRequest;
+export default FriendRequest;

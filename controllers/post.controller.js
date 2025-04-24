@@ -1,22 +1,17 @@
-const { Post, PostImage, PostLike, User, sequelize, Sequelize } = require("../models");
-const { createPostWithImage } = require("../services/post.services");
-const {
-  findPostLike,
-  unlikedPost,
-  likedPost,
-} = require("../services/postLike.service");
+
+import Post from '../models/post.model.js';
+
+import { createPostWithImage } from '../services/post.services.js';
+import { findPostLike, likedPost, unlikedPost } from '../services/postLike.service.js';
 
 const createPost = async (req, res) => {
   const userId = req.user.userId;
-
-  console.log("userId", userId);
-
   try {
     const { caption } = req.body;
     const files = req.files;
     const post = await createPostWithImage(userId, caption, files);
     res.status(201).json({
-      message: "post created successfully",
+      message: "Post created successfully",
       post,
     });
   } catch (error) {
@@ -72,59 +67,56 @@ const unlikePost = async (req, res) => {
   }
 };
 
+const updatePost = async (req, res) => {
+  const { postId } = req.params;
+  const { caption } = req.body;
+  const files = req.files;
+  const userId = req.user.userId;
 
+  try {
+    const updatedPost = await updatePostService(postId, caption, files, userId);
+    res.status(200).json({
+      message: "Post updated successfully",
+      post: updatedPost,
+    });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({
+      message: "Error updating post",
+      error: error.message,
+    });
+  }
+};
 
+const deletePost = async (req, res) => {
+  const { postId } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const message = await deletePostService(postId, userId);
+    res.status(200).json({
+      message,
+    });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({
+      message: "Error deleting post",
+      error: error.message,
+    });
+  }
+};
 
 const getPostsByUserId = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    const posts = await Post.findAll({
-      where: { user_id: userId },
-      attributes: {
-        include: [
-          [
-            Sequelize.literal(`(
-              SELECT COUNT(*)
-              FROM post_likes AS pl
-              WHERE pl.post_id = "Post"."post_id"
-            )`),
-            "totalLikes"
-          ]
-        ]
-      },
-      include: [
-        {
-          model: PostImage,
-          attributes: ["image_url"],
-        },
-        {
-          model: PostLike,
-          attributes: ["postlike_id", "user_id", "post_id", "created_at"],
-          include: [
-            {
-              model: User,
-              as: "liker",
-              attributes: ["user_id", "username"],
-            }
-          ]
-        },
-        {
-          model: User,
-          as: "postOwner",
-          attributes: [
-            "user_id", "username", "email", "first_name", "last_name", "profile", "bio"
-          ]
-        }
-      ],
-      order: [["created_at", "DESC"]],
-    });
+    const posts = await getPostsByUserIdService(userId);
     res.status(200).json({
-      message: "Posts fetched successfully",
+      message: "✅ Posts fetched successfully",
       data: posts,
     });
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("Controller Error - getPostsByUserId:", error);
     res.status(500).json({
       message: "Error fetching posts",
       error: error.message,
@@ -132,12 +124,11 @@ const getPostsByUserId = async (req, res) => {
   }
 };
 
-
-module.exports = { getPostsByUserId };
-
-module.exports = {
+export {
   createPost,
   getPostsByUserId,
   likePost,
   unlikePost,
+  updatePost,
+  deletePost,
 };

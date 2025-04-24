@@ -1,41 +1,33 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const authRouter = require("./routes/auth.Route");
-const sequelize = require("./config/db"); 
-const userProfileRouter = require("./routes/userProfile.route");
-const postrouter = require("./routes/post.router");
-const db = require("./models");  // Adjust path if necessary
-const friendRequestRouter = require("./routes/friendRequest.route");
+import express from "express";
+import dotenv from "dotenv";
+import authRouter from "./routes/auth.Route.js";
+import sequelize from "./config/db.js";
+import userProfileRouter from "./routes/userProfile.route.js";
+import db from "./models/index.js";
+import friendRequestRouter from "./routes/friendRequest.route.js";
+import commentRouter from "./routes/comments.route.js";
+import postRouter from "./routes/post.route.js"
 
 dotenv.config();
+
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/api/auth', authRouter);
-app.use('/api/userProfile', userProfileRouter);
-app.use('/api/post', postrouter);
+app.use("/api/auth", authRouter);
+app.use("/api/userProfile", userProfileRouter);
+app.use("/api/post", postRouter);
 app.use("/api/friends", friendRequestRouter);
-
-
-
-
-
-db.sequelize.sync({ alter: true })  // Use `alter` to create missing tables
-  .then(() => {
-    console.log("Database synced successfully");
-    app.listen(5000, () => console.log("Server running on http://localhost:5000"));
-  })
-  .catch((err) => {
-    console.error("Error syncing database:", err);
-  });
-
-const port = process.env.PORT || 3000;
+app.use("/api/comments", commentRouter);
 
 const startServer = async () => {
   try {
     await sequelize.authenticate();
     console.log("Database connected successfully.");
-    
+
+    await db.sequelize.sync({ alter: true });
+    console.log(" Database synced successfully.");
+
     app.listen(port, () => {
       console.log(` Server running at http://localhost:${port}`);
     });

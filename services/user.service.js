@@ -1,20 +1,23 @@
-    const {User} = require("../models");
-    const {Op}=require("sequelize");
-    const findUserByEmailOrUsername=async(emailorUsername)=>{
-        console.log("emailorUsername",emailorUsername);
-        
-        return await User.findOne({
-            where:{
-                [Op.or]:[{email:emailorUsername},{username:emailorUsername}]
-            }
-        })
-    }
+import User from "../models/user.model.js";
 
+import { Op } from "sequelize";
 
-    const findUserById=async(id)=>{
-        return await User.findByPk(id)
-    }
-    const createUser=async(userData)=>{
-        return await User.create(userData)
-    }
-    module.exports={findUserByEmailOrUsername,findUserById,createUser}
+const findUserByEmailOrUsername = async (emailorUsername) => {
+  console.log("emailorUsername", emailorUsername);
+
+  return await User.findOne({
+    where: {
+      [Op.or]: [{ email: emailorUsername }, { username: emailorUsername }],
+    },
+  });
+};
+
+const findUserById = async (id) => {
+  return await User.findByPk(id);
+};
+
+const createUser = async (userData) => {
+  return await User.create(userData);
+};
+
+export { findUserByEmailOrUsername, findUserById, createUser };

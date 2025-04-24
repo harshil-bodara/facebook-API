@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const { varifyToken } = require("../services/token.service");
+
+import { varifyToken } from "../services/token.service.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -12,12 +12,9 @@ const authMiddleware = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     console.log("Token:", token);
 
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("Decoded:", decoded);
-    const decoded=varifyToken(token)
+    const decoded = varifyToken(token);
     console.log("Decoded:", decoded);
 
-    
     req.user = decoded;
     next();
   } catch (error) {
@@ -26,4 +23,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

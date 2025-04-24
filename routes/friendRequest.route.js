@@ -1,10 +1,19 @@
-const express=require("express");
-const { sendFriendRequest, acceptFriendRequest, rejectFriendRequest } = require("../controllers/friendRequest.controller");
-const authMiddleware = require("../middleware/auth");
-const friendRequestRouter=express.Router()
-friendRequestRouter.post("/:receiverId", authMiddleware,sendFriendRequest);
+import express from "express";
 
-friendRequestRouter.put("/accept/:requestId", authMiddleware,acceptFriendRequest);
+import {
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+} from "../controllers/friendRequest.controller.js";
 
-friendRequestRouter.put("/reject/:requestId", authMiddleware,rejectFriendRequest);
-module.exports=friendRequestRouter
+import authMiddleware from "../middleware/auth.js";
+
+const friendRequestRouter = express.Router();
+
+friendRequestRouter.post("/:receiverId", authMiddleware, sendFriendRequest);
+
+friendRequestRouter.put("/accept/:requestId",authMiddleware,acceptFriendRequest);
+
+friendRequestRouter.put("/reject/:requestId",authMiddleware,rejectFriendRequest);
+
+export default friendRequestRouter;

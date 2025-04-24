@@ -1,64 +1,77 @@
-// const sequelize = require("../config/db");
-// const User = require("./user.model");
+import sequelize from "../config/db.js"; // Adjust if needed
+import { Sequelize } from "sequelize";
 
-// const db = {};
-
-// db.sequelize = sequelize;
-// db.User = require("./user.model");
-// db.Post=require("./post.model")
-// db.PostImage=require("./postImage.model")
-// db.PostLike=require("./postlike.model")
-
-// // user and post
-// db.User.hasMany(db.Post,{foreignKey:"user_id",onDelete:"CASCADE"})
-// db.Post.belongsTo(db.User,{foreignKey:"user_id"})
-
-// // post and postimage
-// db.Post.hasMany(db.PostImage,{foreignKey:"post_id",onDelete:"CASCADE"})
-// db.PostImage.belongsTo(db.Post,{foreignKey:"post_id"})
-
-// // user and Postlike
-// db.User.hasMany(db.PostLike,{foreignKey:"post_id",onDelete:"CASCADE"})
-// db.PostLike.belongsTo(db.User,{foreignKey:"user_id"})
-
-// // post and postlike
-// db.Post.hasMany(db.PostLike,{foreignKey:"post_id",onDelete:"CASCADE"})
-// db.PostLike.belongsTo(db.Post,{foreignKey:"post_id"})
-// module.exports = db;
-const sequelize = require("../config/db");
+import User from "../models/user.model.js";
+import Post from "./post.model.js";
+import PostImage from "./postImage.model.js";
+import PostLike from "./postlike.model.js";
+import FriendRequest from "./friendRequest.model.js";
+import Comment from "./comment.model.js";
 
 const db = {};
-db.sequelize = sequelize;
-db.Sequelize = require("sequelize");
 
-db.User = require("./user.model");
-db.Post = require("./post.model");
-db.PostImage = require("./postImage.model");
-db.PostLike = require("./postlike.model");
-db.FriendRequest=require("./friendRequest.model")
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+db.User = User;
+db.Post = Post;
+db.PostImage = PostImage;
+db.PostLike = PostLike;
+db.FriendRequest = FriendRequest;
+db.Comment = Comment;
 
 // Associations
-db.User.hasMany(db.Post, { foreignKey: "user_id", onDelete: "CASCADE" });
-db.Post.belongsTo(db.User, { foreignKey: "user_id" ,
-  as: "postOwner"});
+db.User.hasMany(db.Post, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+db.Post.belongsTo(db.User, {
+  foreignKey: "user_id",
+  as: "postOwner",
+});
 
-db.User.hasMany(db.FriendRequest, { foreignKey: "sender_id", onDelete: "CASCADE" });
-db.User.hasMany(db.FriendRequest, { foreignKey: "receiver_id", onDelete: "CASCADE" });
+db.User.hasMany(db.FriendRequest, {
+  foreignKey: "sender_id",
+  onDelete: "CASCADE",
+});
+db.User.hasMany(db.FriendRequest, {
+  foreignKey: "receiver_id",
+  onDelete: "CASCADE",
+});
 
-db.Post.hasMany(db.PostImage, { foreignKey: "post_id", onDelete: "CASCADE" });
-db.PostImage.belongsTo(db.Post, { foreignKey: "post_id" });
+db.Post.hasMany(db.PostImage, {
+  foreignKey: "post_id",
+  onDelete: "CASCADE",
+});
+db.PostImage.belongsTo(db.Post, {
+  foreignKey: "post_id",
+});
 
 db.User.hasMany(db.PostLike, {
-    foreignKey: "user_id",
-    onDelete: "CASCADE"
-  });
-  
-  db.PostLike.belongsTo(db.User, {
-    foreignKey: "user_id",
-    as: "liker" 
-  });
-  
-db.Post.hasMany(db.PostLike, { foreignKey: "post_id", onDelete: "CASCADE" });
-db.PostLike.belongsTo(db.Post, { foreignKey: "post_id" });
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+db.PostLike.belongsTo(db.User, {
+  foreignKey: "user_id",
+  as: "liker",
+});
 
-module.exports = db;
+db.Post.hasMany(db.PostLike, {
+  foreignKey: "post_id",
+  onDelete: "CASCADE",
+});
+db.PostLike.belongsTo(db.Post, {
+  foreignKey: "post_id",
+});
+
+db.Comment.belongsTo(db.Post, {
+  foreignKey: "post_id",
+});
+db.Comment.belongsTo(db.User, {
+  foreignKey: "user_id",
+});
+db.User.hasMany(db.Comment, {
+  foreignKey: "user_id",
+});
+
+export default db;

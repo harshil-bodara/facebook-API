@@ -1,16 +1,30 @@
-const express=require("express")
-const { login, signup } = require("../controllers/auth.Controller")
-const authMiddleware = require("../middleware/auth")
-const upload = require("../middleware/upload")
-const { updateProfile } = require("../controllers/userProfile.controller")
-const validate = require("../middleware/validate")
-const { signupSchema, loginSchema, updateProfileSchema } = require("../validations/auth.validation")
-const authRouter=express.Router()
+import express from "express";
 
+import { login, signup } from "../controllers/auth.controller.js";
+import { updateProfile } from "../controllers/userProfile.controller.js";
 
-authRouter.post("/signup",validate(signupSchema),signup)
-authRouter.post("/login",validate(loginSchema),login)
-authRouter.put("/update-profile",authMiddleware,validate(updateProfileSchema),upload.single("profile"),updateProfile)
+import authMiddleware from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
+import validate from "../middleware/validate.js";
 
+import {
+  signupSchema,
+  loginSchema,
+  updateProfileSchema,
+} from "../validations/auth.validation.js";
 
-module.exports=authRouter
+const authRouter = express.Router();
+
+authRouter.post("/signup", validate(signupSchema), signup);
+
+authRouter.post("/login", validate(loginSchema), login);
+
+authRouter.put(
+  "/update-profile",
+  authMiddleware,
+  validate(updateProfileSchema),
+  upload.single("profile"),
+  updateProfile
+);
+
+export default authRouter;

@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from 'joi';
 
 const signupSchema = Joi.object({
   username: Joi.string().min(3).max(30).required(),
@@ -14,13 +14,25 @@ const loginSchema = Joi.object({
 });
 
 const updateProfileSchema = Joi.object({
-    first_name: Joi.string().optional(),
-    last_name: Joi.string().optional(),
-    bio: Joi.string().optional(),
-    profile: Joi.optional(), 
-  });
-module.exports = {
+  first_name: Joi.string().optional(),
+  last_name: Joi.string().optional(),
+  bio: Joi.string().optional(),
+  profile: Joi.optional(),
+});
+
+const commentSchema = Joi.object({
+  postId: Joi.number().integer().required(),
+  content: Joi.string().min(1).required(),
+});
+
+const postSchema = Joi.object({
+  caption: Joi.string().max(500).allow(''),
+});
+
+export {
   signupSchema,
   loginSchema,
-  updateProfileSchema
+  updateProfileSchema,
+  commentSchema,
+  postSchema,
 };

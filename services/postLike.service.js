@@ -1,7 +1,7 @@
-const PostLike = require("../models/postlike.model");
 
+import PostLike from '../models/postlike.model.js';
 
-const findPostLike = async (userId, postId) => {
+export const findPostLike = async (userId, postId) => {
   return await PostLike.findOne({
     where: {
       user_id: userId,
@@ -10,19 +10,14 @@ const findPostLike = async (userId, postId) => {
   });
 };
 
-const likedPost = async (userId, postId) => {
+export  const likedPost = async (userId, postId) => {
   return await PostLike.create({
     user_id: userId,
     post_id: postId,
   });
 };
 
-const unlikedPost = async (likeInstance) => {
+export  const unlikedPost = async (likeInstance) => {
   return await likeInstance.destroy();
 };
 
-module.exports = {
-  findPostLike,
-  likedPost,
-  unlikedPost,
-};
