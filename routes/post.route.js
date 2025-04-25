@@ -1,6 +1,6 @@
 import express from "express";
 
-import authMiddleware from "../middleware/auth.js";
+import verifyToken from "../middleware/verifyToken.js";
 import {
   createPost,
   getPostsByUserId,
@@ -8,35 +8,39 @@ import {
   unlikePost,
   updatePost,
   deletePost,
+  getFriendsPostsController,
 } from "../controllers/post.controller.js";
 
 import uploadPostImage from "../middleware/uploadPostImage.js";
 import validate from "../middleware/validate.js";
-import { postSchema } from "../validations/auth.validation.js";
+import { postSchema } from "../validations/validation.schemas.js";
 
 const postRouter = express.Router();
 
-postRouter.get("/", authMiddleware, getPostsByUserId);
+postRouter.get("/", verifyToken, getPostsByUserId);
 
 postRouter.post(
   "/",
-  authMiddleware,
+  verifyToken,
   uploadPostImage.array("images"),
   createPost
 );
 
-postRouter.post("/like/:postId", authMiddleware, likePost);
+postRouter.post("/like/:postId", verifyToken, likePost);
 
-postRouter.post("/unlike/:postId", authMiddleware, unlikePost);
+postRouter.post("/unlike/:postId", verifyToken, unlikePost);
 
 postRouter.put(
   "/:postId",
-  authMiddleware,
-  uploadPostImage.array("file"),
+  verifyToken,
+  uploadPostImage.array("image"),
   validate(postSchema),
   updatePost
 );
 
-postRouter.delete("/:postId", authMiddleware, deletePost);
+
+postRouter.get('/friends/posts', verifyToken, getFriendsPostsController);
+
+postRouter.delete("/:postId", verifyToken, deletePost);
 
 export default postRouter;

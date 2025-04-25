@@ -1,7 +1,7 @@
 
 import Post from '../models/post.model.js';
 
-import { createPostWithImage } from '../services/post.services.js';
+import { createPostWithImage, getFriendsPostsService, getPostsByUserIdService } from '../services/post.services.js';
 import { findPostLike, likedPost, unlikedPost } from '../services/postLike.service.js';
 
 const createPost = async (req, res) => {
@@ -112,7 +112,7 @@ const getPostsByUserId = async (req, res) => {
   try {
     const posts = await getPostsByUserIdService(userId);
     res.status(200).json({
-      message: "✅ Posts fetched successfully",
+      message: "Posts fetched successfully",
       data: posts,
     });
   } catch (error) {
@@ -124,6 +124,25 @@ const getPostsByUserId = async (req, res) => {
   }
 };
 
+
+// ✅ Controller: Fetch posts from accepted friends only
+ const getFriendsPostsController = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const posts = await getFriendsPostsService(userId);
+    res.status(200).json({
+      message: 'Friend posts fetched successfully',
+      data: posts,
+    });
+  } catch (error) {
+    console.error('Controller Error - getFriendsPosts:', error);
+    res.status(500).json({
+      message: 'Error fetching friend posts',
+      error: error.message,
+    });
+  }
+};
 export {
   createPost,
   getPostsByUserId,
@@ -131,4 +150,5 @@ export {
   unlikePost,
   updatePost,
   deletePost,
+  getFriendsPostsController
 };

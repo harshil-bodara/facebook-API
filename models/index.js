@@ -73,5 +73,13 @@ db.Comment.belongsTo(db.User, {
 db.User.hasMany(db.Comment, {
   foreignKey: "user_id",
 });
+db.Post.hasMany(db.Comment, { as: "comments", foreignKey: "post_id" });
+db.Comment.belongsTo(db.User, { as: "commenter", foreignKey: "user_id" });
+
+db.FriendRequest.belongsTo(db.User, { as: "sender", foreignKey: "sender_id" });
+db.FriendRequest.belongsTo(db.User, {
+  as: "receiver",
+  foreignKey: "receiver_id",
+});
 
 export default db;

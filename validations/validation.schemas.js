@@ -13,7 +13,7 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-const updateProfileSchema = Joi.object({
+const updateProfileValidationSchema = Joi.object({
   first_name: Joi.string().optional(),
   last_name: Joi.string().optional(),
   bio: Joi.string().optional(),
@@ -32,7 +32,7 @@ const postSchema = Joi.object({
 export {
   signupSchema,
   loginSchema,
-  updateProfileSchema,
+  updateProfileValidationSchema,
   commentSchema,
   postSchema,
 };

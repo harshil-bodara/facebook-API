@@ -2,22 +2,22 @@ import express from "express";
 
 import {
   updateProfile,
-  getUserProfileData,
+    getProfile,
 } from "../controllers/userProfile.controller.js";
 
-import authMiddleware from "../middleware/auth.js";
+import verifyToken from "../middleware/verifyToken.js";
 import validate from "../middleware/validate.js";
-import { updateProfileSchema } from "../validations/auth.validation.js";
+import { updateProfileValidationSchema } from "../validations/validation.schemas.js";
 import upload from "../middleware/upload.js";
 
 const userProfileRouter = express.Router();
 
-userProfileRouter.get("/profile", authMiddleware, getUserProfileData);
+userProfileRouter.get("/profile", verifyToken,   getProfile);
 
 userProfileRouter.put(
-  "/update-profile",
-  authMiddleware,
-  validate(updateProfileSchema),
+  "/profile/update",
+  verifyToken,
+  validate(updateProfileValidationSchema),
   upload.single("profile"),
   updateProfile
 );

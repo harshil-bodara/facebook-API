@@ -33,7 +33,7 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const getUserProfileData = async (req, res) => {
+const   getProfile = async (req, res) => {
   const userId = req.user.userId;
 
   try {
@@ -49,4 +49,4 @@ const getUserProfileData = async (req, res) => {
   }
 };
 
-export { updateProfile, getUserProfileData };
+export { updateProfile,   getProfile };

@@ -1,26 +1,17 @@
-import Comment from "../models/comment.model.js";
-import User from "../models/user.model.js";
+import { createNewComment, fetchAllComments, fetchCommentsByUserId, modifyComment, removeComment } from "../services/comment.service.js";
 
-// Create a comment
+
+// Create comment
 const createComment = async (req, res) => {
   const userId = req.user.userId;
   const { postId, content } = req.body;
-
-  console.log("userId:", userId);
-  console.log("postId:", postId);
-  console.log("content:", content);
 
   try {
     if (!userId || !postId || !content) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const comment = await Comment.create({
-      user_id: userId,
-      post_id: postId,
-      content,
-    });
-
+    const comment = await createNewComment({ userId, postId, content });
     res.status(201).json({ message: "Comment created successfully", comment });
   } catch (error) {
     console.error("Error creating comment:", error);
@@ -31,7 +22,7 @@ const createComment = async (req, res) => {
 // Get all comments
 const getAllComments = async (req, res) => {
   try {
-    const comments = await Comment.findAll();
+    const comments = await fetchAllComments();
     res.status(200).json(comments);
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -39,24 +30,12 @@ const getAllComments = async (req, res) => {
   }
 };
 
-// Get comments by postId
+// Get by post ID
 const getCommentsByPost = async (req, res) => {
   const { postId } = req.params;
 
-  console.log("postId:", postId);
-
   try {
-    const comments = await Comment.findAll({
-      where: { post_id: postId },
-      include: [
-        {
-          model: User,
-          attributes: ['user_id', 'username'],
-        },
-      ],
-      order: [['created_at', 'DESC']],
-    });
-
+    const comments = await fetchCommentsByUserId(postId);
     if (comments.length === 0) {
       return res.status(404).json({ message: "No comments found for this post" });
     }
@@ -68,15 +47,12 @@ const getCommentsByPost = async (req, res) => {
   }
 };
 
-// Get comments by userId
+// Get by user ID
 const getCommentsByUser = async (req, res) => {
   const userId = req.user.userId;
 
-  console.log("userId:", userId);
-
   try {
-    const comments = await Comment.findAll({ where: { user_id: userId } });
-
+    const comments = await fetchCommentsByUserId(userId);
     if (comments.length === 0) {
       return res.status(404).json({ message: "No comments found for this user" });
     }
@@ -88,22 +64,16 @@ const getCommentsByUser = async (req, res) => {
   }
 };
 
-// Update a comment
+// Update
 const updateComment = async (req, res) => {
   const { commentId } = req.params;
   const { content } = req.body;
 
-  console.log("commentId:", commentId);
-  console.log("content:", content);
-
   try {
-    const [updated] = await Comment.update(
-      { content },
-      { where: { id: commentId } }
-    );
-
-    if (updated) {
-      const updatedComment = await Comment.findByPk(commentId);
+    const updatedComment = await modifyComment(commentId, content);
+    console.log("updatedComment",updatedComment);
+    
+    if (updatedComment) {
       res.status(200).json(updatedComment);
     } else {
       res.status(404).json({ message: "Comment not found" });
@@ -114,15 +84,12 @@ const updateComment = async (req, res) => {
   }
 };
 
-// Delete a comment
+// Delete
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
 
-  console.log("commentId:", commentId);
-
   try {
-    const deleted = await Comment.destroy({ where: { id: commentId } });
-
+    const deleted = await removeComment(commentId);
     if (deleted) {
       res.status(200).json({ message: "Comment deleted successfully" });
     } else {

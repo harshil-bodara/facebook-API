@@ -9,20 +9,20 @@ import {
 } from "../controllers/comment.controller.js";
 
 import validate from "../middleware/validate.js";
-import authMiddleware from "../middleware/auth.js";
+import verifyToken from "../middleware/verifyToken.js";
 
-import { commentSchema } from "../validations/auth.validation.js";
+import { commentSchema } from "../validations/validation.schemas.js";
 
 const commentRouter = express.Router();
 
-commentRouter.post("/", validate(commentSchema), authMiddleware, createComment);
+commentRouter.post("/", validate(commentSchema), verifyToken, createComment);
 
-commentRouter.get("/post/:postId", authMiddleware, getCommentsByPost);
+commentRouter.get("/post/:postId", verifyToken, getCommentsByPost);
 
-commentRouter.get("/user/", authMiddleware, getCommentsByUser);
+commentRouter.get("/user/", verifyToken, getCommentsByUser);
 
-commentRouter.put("/:commentId", authMiddleware, updateComment);
+commentRouter.put("/:commentId", verifyToken, updateComment);
 
-commentRouter.delete("/:commentId", authMiddleware, deleteComment);
+commentRouter.delete("/:commentId", verifyToken, deleteComment);
 
 export default commentRouter;

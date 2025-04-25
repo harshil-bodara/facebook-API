@@ -1,7 +1,7 @@
 
 import { varifyToken } from "../services/token.service.js";
 
-const authMiddleware = async (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
 
@@ -23,4 +23,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-export default authMiddleware;
+export default verifyToken;

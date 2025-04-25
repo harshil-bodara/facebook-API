@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api/auth", authRouter);
-app.use("/api/userProfile", userProfileRouter);
+app.use("/api/user-profile", userProfileRouter);
 app.use("/api/post", postRouter);
 app.use("/api/friends", friendRequestRouter);
 app.use("/api/comments", commentRouter);

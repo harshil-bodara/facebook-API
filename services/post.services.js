@@ -4,6 +4,9 @@ import Post from '../models/post.model.js';
 import PostImage from '../models/postImage.model.js';
 import PostLike from '../models/postlike.model.js';
 import User from '../models/user.model.js';
+import Comment from '../models/comment.model.js';
+import FriendRequest from '../models/friendRequest.model.js';
+import { Op } from 'sequelize';
 
 // Create a post with image(s)
 export const createPostWithImage = async (userId, caption, files) => {
@@ -78,8 +81,6 @@ export const deletePostService = async (postId, userId) => {
 
   return 'Post and images deleted successfully';
 };
-
-// Get all posts by a specific user
 export const getPostsByUserIdService = async (userId) => {
   try {
     const posts = await Post.findAll({
@@ -125,6 +126,18 @@ export const getPostsByUserIdService = async (userId) => {
             'bio',
           ],
         },
+        {
+          model: Comment, // assuming your model is named Comment
+          as: 'comments', // alias based on your association
+          attributes: ['id', 'post_id', 'user_id', 'content', 'created_at'],
+          include: [
+            {
+              model: User,
+              as: 'commenter', // alias used in your association
+              attributes: ['user_id', 'username'],
+            },
+          ],
+        },
       ],
       order: [['created_at', 'DESC']],
     });
@@ -134,4 +147,73 @@ export const getPostsByUserIdService = async (userId) => {
     console.error('Service Error - getPostsByUserId:', error);
     throw new Error('Unable to fetch user posts');
   }
+};
+
+
+export const getAcceptedFriendIds = async (userId) => {
+  const friends = await FriendRequest.findAll({
+    where: {
+      status: 'accepted',
+      [Op.or]: [
+        { sender_id: userId },
+        { receiver_id: userId },
+      ],
+    },
+  });
+
+  const friendIds = friends.map(friend =>
+    friend.sender_id === userId ? friend.receiver_id : friend.sender_id
+  );
+
+  return friendIds;
+};
+
+export const getFriendsPostsService = async (userId) => {
+  const friendIds = await getAcceptedFriendIds(userId);
+  console.log("friendIds",friendIds);
+  
+  const posts = await Post.findAll({
+    where: {
+      user_id: {
+        [Op.in]: friendIds,
+      },
+    },
+    include: [
+      {
+        model: PostImage,
+        attributes: ['image_url'],
+      },
+      {
+        model: PostLike,
+        attributes: ['postlike_id', 'user_id', 'post_id', 'created_at'],
+        include: [
+          {
+            model: User,
+            as: 'liker',
+            attributes: ['user_id', 'username'],
+          },
+        ],
+      },
+      {
+        model: User,
+        as: 'postOwner',
+        attributes: ['user_id', 'username', 'first_name', 'last_name'],
+      },
+      {
+        model: Comment, // assuming your model is named Comment
+        as: 'comments', // alias based on your association
+        attributes: ['id', 'post_id', 'user_id', 'content', 'created_at'],
+        include: [
+          {
+            model: User,
+            as: 'commenter', // alias used in your association
+            attributes: ['user_id', 'username'],
+          },
+        ],
+      },
+    ],
+    order: [['created_at', 'DESC']],
+  });
+
+  return posts;
 };
