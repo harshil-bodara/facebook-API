@@ -1,6 +1,6 @@
 
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
+import sequelize from "../config/dbConfig.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 

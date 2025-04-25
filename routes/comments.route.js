@@ -8,21 +8,21 @@ import {
   getCommentsByUser,
 } from "../controllers/comment.controller.js";
 
-import validate from "../middleware/validate.js";
-import verifyToken from "../middleware/verifyToken.js";
+import validate from "../validation/validate.helper.js";
+import { commentSchema } from "../validation/post.validation.js";
+import UserAuthorization from "../middleware/auth.middleware.js";
 
-import { commentSchema } from "../validations/validation.schemas.js";
 
 const commentRouter = express.Router();
 
-commentRouter.post("/", validate(commentSchema), verifyToken, createComment);
+commentRouter.post("/", validate(commentSchema), UserAuthorization, createComment);
 
-commentRouter.get("/post/:postId", verifyToken, getCommentsByPost);
+commentRouter.get("/post/:postId", UserAuthorization, getCommentsByPost);
 
-commentRouter.get("/user/", verifyToken, getCommentsByUser);
+commentRouter.get("/user/", UserAuthorization, getCommentsByUser);
 
-commentRouter.put("/:commentId", verifyToken, updateComment);
+commentRouter.put("/:commentId", UserAuthorization, updateComment);
 
-commentRouter.delete("/:commentId", verifyToken, deleteComment);
+commentRouter.delete("/:commentId", UserAuthorization, deleteComment);
 
 export default commentRouter;

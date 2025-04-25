@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-const extractPublicId = (imageUrl) => {
+export const extractPublicId = (imageUrl) => {
   try {
     const url = new URL(imageUrl);
     const path = url.pathname;
@@ -18,7 +18,7 @@ const extractPublicId = (imageUrl) => {
   }
 };
 
-const deleteImageFromCloudinary = async (publicId) => {
+export const deleteImageFromCloudinary = async (publicId) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
     console.log("Deleted from Cloudinary:", publicId, "→", result);
@@ -29,4 +29,3 @@ const deleteImageFromCloudinary = async (publicId) => {
   }
 };
 
-export { extractPublicId, deleteImageFromCloudinary };

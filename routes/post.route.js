@@ -1,46 +1,34 @@
-import express from "express";
 
-import verifyToken from "../middleware/verifyToken.js";
-import {
-  createPost,
-  getPostsByUserId,
-  likePost,
-  unlikePost,
-  updatePost,
-  deletePost,
-  getFriendsPostsController,
-} from "../controllers/post.controller.js";
-
-import uploadPostImage from "../middleware/uploadPostImage.js";
-import validate from "../middleware/validate.js";
-import { postSchema } from "../validations/validation.schemas.js";
+import express from 'express';
+import uploadImage from '../middleware/upload.js';
+import UserAuthorization from '../middleware/auth.middleware.js';
+import { createPost, deletePost, getFriendsPostsController, getPostsByUserId, likePost,  updatePost } from '../controllers/post.controller.js';
+import validate from '../validation/validate.helper.js';
+import { postSchema } from '../validation/post.validation.js';
 
 const postRouter = express.Router();
 
-postRouter.get("/", verifyToken, getPostsByUserId);
-
 postRouter.post(
-  "/",
-  verifyToken,
-  uploadPostImage.array("images"),
+  '/',
+  UserAuthorization,
+  uploadImage('post_images').array('images'), 
   createPost
 );
 
-postRouter.post("/like/:postId", verifyToken, likePost);
-
-postRouter.post("/unlike/:postId", verifyToken, unlikePost);
-
 postRouter.put(
-  "/:postId",
-  verifyToken,
-  uploadPostImage.array("image"),
+  '/:postId',
+  UserAuthorization,
+  uploadImage('post_images').array('images'), 
   validate(postSchema),
   updatePost
 );
+postRouter.get("/", UserAuthorization, getPostsByUserId);
 
+postRouter.post("/like/:postId", UserAuthorization, likePost);
 
-postRouter.get('/friends/posts', verifyToken, getFriendsPostsController);
+postRouter.delete("/:postId", UserAuthorization, deletePost);
 
-postRouter.delete("/:postId", verifyToken, deletePost);
+postRouter.get('/friends/posts', UserAuthorization, getFriendsPostsController);
+
 
 export default postRouter;

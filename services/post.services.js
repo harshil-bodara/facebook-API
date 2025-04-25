@@ -1,5 +1,5 @@
-import sequelize from '../config/db.js';
-import { deleteImageFromCloudinary, extractPublicId } from './cloudinary.service.js';
+import sequelize from '../config/dbConfig.js';
+import { deleteImageFromCloudinary, extractPublicId } from '../utils/cloudinary.utils.js';
 import Post from '../models/post.model.js';
 import PostImage from '../models/postImage.model.js';
 import PostLike from '../models/postlike.model.js';
@@ -9,7 +9,7 @@ import FriendRequest from '../models/friendRequest.model.js';
 import { Op } from 'sequelize';
 
 // Create a post with image(s)
-export const createPostWithImage = async (userId, caption, files) => {
+const createPostWithImage = async (userId, caption, files) => {
   const post = await Post.create({ user_id: userId, caption });
 
   if (files && files.length > 0) {
@@ -24,7 +24,13 @@ export const createPostWithImage = async (userId, caption, files) => {
 };
 
 // Update an existing post
-export const updatePostService = async (postId, caption, files, userId) => {
+const updatePostService = async (postId, caption, files, userId) => {
+  console.log("postId",postId);
+  console.log("caption",caption);
+  console.log("files",files);
+  console.log("userId",userId);
+
+  
   const post = await Post.findByPk(postId, {
     include: [{ model: PostImage }],
   });
@@ -61,7 +67,7 @@ export const updatePostService = async (postId, caption, files, userId) => {
 };
 
 // Delete a post along with its images
-export const deletePostService = async (postId, userId) => {
+const deletePostService = async (postId, userId) => {
   const post = await Post.findByPk(postId, {
     include: [{ model: PostImage }],
   });
@@ -81,7 +87,7 @@ export const deletePostService = async (postId, userId) => {
 
   return 'Post and images deleted successfully';
 };
-export const getPostsByUserIdService = async (userId) => {
+const getPostsByUserIdService = async (userId) => {
   try {
     const posts = await Post.findAll({
       where: { user_id: userId },
@@ -150,7 +156,7 @@ export const getPostsByUserIdService = async (userId) => {
 };
 
 
-export const getAcceptedFriendIds = async (userId) => {
+const getAcceptedFriendIds = async (userId) => {
   const friends = await FriendRequest.findAll({
     where: {
       status: 'accepted',
@@ -168,7 +174,7 @@ export const getAcceptedFriendIds = async (userId) => {
   return friendIds;
 };
 
-export const getFriendsPostsService = async (userId) => {
+const getFriendsPostsService = async (userId) => {
   const friendIds = await getAcceptedFriendIds(userId);
   console.log("friendIds",friendIds);
   
@@ -217,3 +223,88 @@ export const getFriendsPostsService = async (userId) => {
 
   return posts;
 };
+
+
+
+
+const findPostLike = async (userId, postId) => {
+  return await PostLike.findOne({
+    where: {
+      user_id: userId,
+      post_id: postId,
+    },
+  });
+};
+
+ const likedPost = async (userId, postId) => {
+  return await PostLike.create({
+    user_id: userId,
+    post_id: postId,
+  });
+};
+
+ const unlikedPost = async (likeInstance) => {
+  return await likeInstance.destroy();
+};
+
+const createNewComment = async ({ userId, postId, content }) => {
+  return await Comment.create({
+    user_id: userId,
+    post_id: postId,
+    content,
+  });
+};
+
+const fetchAllComments = async () => {
+  return await Comment.findAll();
+};
+
+const fetchCommentsByPostId = async (postId) => {
+  return await Comment.findAll({
+    where: { post_id: postId },
+    include: [{ model: User, attributes: ['user_id', 'username'] }],
+    order: [['created_at', 'DESC']],
+  });
+};
+
+const fetchCommentsByUserId = async (userId) => {
+    console.log("get comments vy user",userId);
+    
+  return await Comment.findAll({ where: { user_id: userId } });
+};
+
+const modifyComment = async (commentId, content) => {
+    console.log("content",content);
+    console.log("commentId",commentId);
+
+    
+  const [updated] = await Comment.update({ content }, { where: { id: commentId } });
+  console.log("updated",updated);
+  
+  if (updated) {
+    return await Comment.findByPk(commentId);
+  }
+  return null;
+};
+
+ const removeComment = async (commentId) => {
+  return await Comment.destroy({ where: { id: commentId } });
+};
+
+export default{
+  createPostWithImage,
+  updatePostService,
+  deletePostService,
+  fetchAllComments,
+  createNewComment,
+  fetchCommentsByPostId,
+  getPostsByUserIdService,
+  fetchCommentsByUserId,
+  modifyComment,
+  removeComment,
+  unlikedPost,
+  likedPost,
+  findPostLike,
+  getFriendsPostsService
+
+}

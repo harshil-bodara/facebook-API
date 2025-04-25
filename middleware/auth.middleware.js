@@ -1,7 +1,6 @@
+import { verifyJwtToken } from "../utils/jwt.utils.js";
 
-import { varifyToken } from "../services/token.service.js";
-
-const verifyToken = async (req, res, next) => {
+const UserAuthorization = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
 
@@ -12,7 +11,7 @@ const verifyToken = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     console.log("Token:", token);
 
-    const decoded = varifyToken(token);
+    const decoded = verifyJwtToken(token); 
     console.log("Decoded:", decoded);
 
     req.user = decoded;
@@ -23,4 +22,4 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-export default verifyToken;
+export default UserAuthorization;

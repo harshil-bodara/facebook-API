@@ -1,4 +1,4 @@
-import sequelize from "../config/db.js"; // Adjust if needed
+import sequelize from "../config/dbConfig.js"; // Adjust if needed
 import { Sequelize } from "sequelize";
 
 import User from "../models/user.model.js";

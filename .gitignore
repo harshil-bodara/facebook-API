@@ -1,0 +1,13 @@
+# Node.js modules
+/node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+logs/
+*.log.*
+
+
+/DataBasedesign.sql

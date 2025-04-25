@@ -1,15 +1,14 @@
 
 import Post from '../models/post.model.js';
 
-import { createPostWithImage, getFriendsPostsService, getPostsByUserIdService } from '../services/post.services.js';
-import { findPostLike, likedPost, unlikedPost } from '../services/postLike.service.js';
+import postServices from '../services/post.services.js';
 
-const createPost = async (req, res) => {
+export const createPost = async (req, res) => {
   const userId = req.user.userId;
   try {
     const { caption } = req.body;
     const files = req.files;
-    const post = await createPostWithImage(userId, caption, files);
+    const post = await postServices.createPostWithImage(userId, caption, files);
     res.status(201).json({
       message: "Post created successfully",
       post,
@@ -23,7 +22,7 @@ const createPost = async (req, res) => {
   }
 };
 
-const likePost = async (req, res) => {
+export const likePost = async (req, res) => {
   const userId = req.user.userId;
   const postId = req.params.postId;
 
@@ -33,14 +32,14 @@ const likePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const existingLike = await findPostLike(userId, postId);
+    const existingLike = await postServices.findPostLike(userId, postId);
 
     if (existingLike) {
-      await unlikedPost(existingLike);
+      await postServices.unlikedPost(existingLike);
       return res.status(200).json({ message: "Post unliked" });
     }
 
-    const like = await likedPost(userId, postId);
+    const like = await postServices.likedPost(userId, postId);
     return res.status(201).json({ message: "Post liked", like });
   } catch (error) {
     console.error(error);
@@ -48,33 +47,14 @@ const likePost = async (req, res) => {
   }
 };
 
-const unlikePost = async (req, res) => {
-  const userId = req.user.userId;
-  const postId = req.params.postId;
 
+export const updatePost = async (req, res) => {
+
+
+
+  
   try {
-    const existingLike = await findPostLike(userId, postId);
-
-    if (!existingLike) {
-      return res.status(404).json({ message: "Like not found" });
-    }
-
-    await unlikedPost(existingLike);
-    return res.status(200).json({ message: "Post unliked" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error unliking post" });
-  }
-};
-
-const updatePost = async (req, res) => {
-  const { postId } = req.params;
-  const { caption } = req.body;
-  const files = req.files;
-  const userId = req.user.userId;
-
-  try {
-    const updatedPost = await updatePostService(postId, caption, files, userId);
+    const updatedPost = await postServices.updatePostService(postId, caption, files, userId);
     res.status(200).json({
       message: "Post updated successfully",
       post: updatedPost,
@@ -88,12 +68,12 @@ const updatePost = async (req, res) => {
   }
 };
 
-const deletePost = async (req, res) => {
+export const deletePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
 
   try {
-    const message = await deletePostService(postId, userId);
+    const message = await postServices.deletePostService(postId, userId);
     res.status(200).json({
       message,
     });
@@ -106,11 +86,11 @@ const deletePost = async (req, res) => {
   }
 };
 
-const getPostsByUserId = async (req, res) => {
+export const getPostsByUserId = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    const posts = await getPostsByUserIdService(userId);
+    const posts = await postServices.getPostsByUserIdService(userId);
     res.status(200).json({
       message: "Posts fetched successfully",
       data: posts,
@@ -125,12 +105,12 @@ const getPostsByUserId = async (req, res) => {
 };
 
 
-// ✅ Controller: Fetch posts from accepted friends only
- const getFriendsPostsController = async (req, res) => {
+
+export const getFriendsPostsController = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    const posts = await getFriendsPostsService(userId);
+    const posts = await postServices.getFriendsPostsService(userId);
     res.status(200).json({
       message: 'Friend posts fetched successfully',
       data: posts,
@@ -143,12 +123,4 @@ const getPostsByUserId = async (req, res) => {
     });
   }
 };
-export {
-  createPost,
-  getPostsByUserId,
-  likePost,
-  unlikePost,
-  updatePost,
-  deletePost,
-  getFriendsPostsController
-};
+
