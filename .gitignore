@@ -4,10 +4,6 @@
 # Environment variables
 .env
 
-# Logs
-*.log
-logs/
-*.log.*
 
 
 /DataBasedesign.sql
