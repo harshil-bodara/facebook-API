@@ -35,6 +35,14 @@ const User = sequelize.define(
     bio: {
       type: DataTypes.TEXT,
     },
+    reset_otp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    reset_otp_expires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

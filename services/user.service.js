@@ -87,6 +87,22 @@ const getUserFriendsService = async (userId) => {
   return friends;
 };
 
+
+const updateUser = async (userId, updates) => {
+  const user = await User.findByPk(userId);
+  if (!user) return null;
+  return await user.update(updates);
+};
+
+const verifyResetOtp = async (emailOrUsername, otp) => {
+  const user = await findUserByEmailOrUsername(emailOrUsername);
+  if (!user) return null;
+
+  const isOtpValid =
+    user.reset_otp === otp && Date.now() < Number(user.reset_otp_expires);
+
+  return isOtpValid ? user : null;
+};
 export default {
   findUserByEmailOrUsername,
   findUserById,
@@ -96,4 +112,6 @@ export default {
   getFriendRequestById,
   updateFriendRequestStatus,
   getUserFriendsService,
+  updateUser,
+  verifyResetOtp
 };

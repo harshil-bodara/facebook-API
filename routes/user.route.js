@@ -1,22 +1,31 @@
-
 import express from 'express';
 import uploadImage from '../middleware/upload.js';
-import { updateProfile, getProfile } from '../controllers/user.controller.js';
-import validate from '../validation/validate.helper.js';
+import { updateProfile, getProfile, getUserFriendsController, sendFriendRequest, acceptFriendRequest, rejectFriendRequest } from '../controllers/user.controller.js';
+import validate from '../utils/validate.helper.js';
 import { updateProfileValidationSchema } from '../validation/post.validation.js';
 import UserAuthorization from '../middleware/auth.middleware.js';
 
+
 const userRouter = express.Router();
 
+//  User Profile Routes
+userRouter.get('/profile', UserAuthorization, getProfile);
+
 userRouter.put(
-  '/profile/update',
+  '/profile-update', 
   UserAuthorization,
   validate(updateProfileValidationSchema),
-  uploadImage('profile_images').single('profile'), // Single image upload for profile
+  uploadImage('profile_images').single('profile'),
   updateProfile
 );
 
-userRouter.get('/profile', UserAuthorization, getProfile);
+//  Friend Request Routes
+userRouter.get('/friends', UserAuthorization, getUserFriendsController);
 
+userRouter.post('/friend-requests/:receiverId', UserAuthorization, sendFriendRequest);
+
+userRouter.put('/friend-requests/:requestId/accept', UserAuthorization, acceptFriendRequest);
+
+userRouter.put('/friend-requests/:requestId/reject', UserAuthorization, rejectFriendRequest);
 
 export default userRouter;

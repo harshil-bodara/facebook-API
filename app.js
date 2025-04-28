@@ -11,10 +11,9 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api/auth", routes.authRouter);
-app.use("/api/user-profile", routes.userRouter);
+app.use("/api/user", routes.userRouter);
 app.use("/api/post", routes.postRouter);
-app.use("/api/friends", routes.friendRequestRouter);
-app.use("/api/comments", routes.commentRouter);
+
 
 const startServer = async () => {
   try {

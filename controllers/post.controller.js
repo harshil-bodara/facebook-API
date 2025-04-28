@@ -3,6 +3,25 @@ import Post from '../models/post.model.js';
 
 import postServices from '../services/post.services.js';
 
+//  Post API
+export const getPostsByUserId = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const posts = await postServices.getPostsByUserIdService(userId);
+    res.status(200).json({
+      message: "Posts fetched successfully",
+      data: posts,
+    });
+  } catch (error) {
+    console.error("Controller Error - getPostsByUserId:", error);
+    res.status(500).json({
+      message: "Error fetching posts",
+      error: error.message,
+    });
+  }
+};
+
 export const createPost = async (req, res) => {
   const userId = req.user.userId;
   try {
@@ -22,36 +41,11 @@ export const createPost = async (req, res) => {
   }
 };
 
-export const likePost = async (req, res) => {
-  const userId = req.user.userId;
-  const postId = req.params.postId;
-
-  try {
-    const post = await Post.findByPk(postId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    const existingLike = await postServices.findPostLike(userId, postId);
-
-    if (existingLike) {
-      await postServices.unlikedPost(existingLike);
-      return res.status(200).json({ message: "Post unliked" });
-    }
-
-    const like = await postServices.likedPost(userId, postId);
-    return res.status(201).json({ message: "Post liked", like });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error toggling like" });
-  }
-};
-
-
 export const updatePost = async (req, res) => {
-
-
-
+  const {postId}=req.params
+  const {caption}=req.body;
+  const files=req.files;
+  const userId=req.user.userId
   
   try {
     const updatedPost = await postServices.updatePostService(postId, caption, files, userId);
@@ -86,26 +80,141 @@ export const deletePost = async (req, res) => {
   }
 };
 
-export const getPostsByUserId = async (req, res) => {
+//  Like and Unlike API
+export const likePost = async (req, res) => {
   const userId = req.user.userId;
+  const postId = req.params.postId;
 
   try {
-    const posts = await postServices.getPostsByUserIdService(userId);
-    res.status(200).json({
-      message: "Posts fetched successfully",
-      data: posts,
-    });
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const existingLike = await postServices.findPostLike(userId, postId);
+
+    if (existingLike) {
+      await postServices.unlikedPost(existingLike);
+      return res.status(200).json({ message: "Post unliked" });
+    }
+
+    const like = await postServices.likedPost(userId, postId);
+    return res.status(201).json({ message: "Post liked", like });
   } catch (error) {
-    console.error("Controller Error - getPostsByUserId:", error);
-    res.status(500).json({
-      message: "Error fetching posts",
-      error: error.message,
-    });
+    console.error(error);
+    res.status(500).json({ message: "Error toggling like" });
   }
 };
 
 
+//  Comment APIs
+// Get by post ID
+export const getCommentsByPost = async (req, res) => {
+  const postId  = req.params;
+  console.log("postId",postId.id);
+  
+  try {
+    const comments = await postServices.fetchCommentsByPostId(postId.id);
+    console.log("comments",comments);
+    
+    if (comments.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No comments found for this post" });
+    }
 
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments for post:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// Get by user ID
+export const getCommentsByUser = async (req, res) => {
+  console.log("here");
+  
+  const userId = req.user.userId;
+  console.log("userId",userId);
+  
+
+  try {
+    const comments = await postServices.fetchCommentsByUserId(userId);
+    if (comments.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No comments found for this user" });
+    }
+
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments by user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const createComment = async (req, res) => {
+  const userId = req.user.userId;
+  const { postId, content } = req.body;
+
+  try {
+    if (!userId || !postId || !content) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const comment = await postServices.createNewComment({
+      userId,
+      postId,
+      content,
+    });
+    res.status(201).json({ message: "Comment created successfully", comment });
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// Update
+export const updateComment = async (req, res) => {
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  try {
+    const updatedComment = await postServices.modifyComment(commentId, content);
+    console.log("updatedComment", updatedComment);
+
+    if (updatedComment) {
+      res.status(200).json(updatedComment);
+    } else {
+      res.status(404).json({ message: "Comment not found" });
+    }
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete
+export const deleteComment = async (req, res) => {
+  const { commentId } = req.params;
+
+  try {
+    const deleted = await postServices.removeComment(commentId);
+    if (deleted) {
+      res.status(200).json({ message: "Comment deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Comment not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+//  Friend Posts API
 export const getFriendsPostsController = async (req, res) => {
   const userId = req.user.userId;
 
@@ -123,4 +232,17 @@ export const getFriendsPostsController = async (req, res) => {
     });
   }
 };
+
+
+// Get all comments
+export const getAllComments = async (req, res) => {
+  try {
+    const comments = await postServices.fetchAllComments();
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
