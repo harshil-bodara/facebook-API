@@ -3,16 +3,14 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinaryConfig'; // Ensure correct import for your cloudinary config
 import { Request, Response, NextFunction } from 'express';
 
-// Define allowed file types
 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
 
-// File filter function with types
 const fileFilter: multer.Options['fileFilter'] = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true); // No error, allow the file
+    cb(null, true);
   } else {
     const error = new Error('Only .jpeg, .jpg, .png files are allowed');
-    cb(null, false); // Pass the error to the callback correctly
+    cb(null, false); 
   }
 };
 
@@ -36,7 +34,7 @@ const uploadImage = ({ folderName, getPublicIdFn }: UploadImageOptions) => {
     },
   });
 
-  return multer({ storage,fileFilter:fileFilter }); // assuming multer is imported
+  return multer({ storage,fileFilter:fileFilter }); 
 };
 
 export default uploadImage;

@@ -50,4 +50,15 @@ export interface IPostLike {
     public user_id!: number;
     public caption!: string;
   }
+  export interface IUserData {
+    email: string;
+    username: string;
+    first_name: string;
+    last_name: string;
+    profile: string;
+    reset_otp: number;
+    reset_otp_expires: number;
+    password: string;
+    biots?: number; 
+  }
   

@@ -8,7 +8,9 @@ export interface IFriendRequestCreationAttributes
 class FriendRequest extends Model<
   IFriendRequest,
   IFriendRequestCreationAttributes
-> {}
+> {
+  status: string;
+}
 
 FriendRequest.init(
   {

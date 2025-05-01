@@ -11,7 +11,6 @@ interface EmailEnvConfig {
 
 const emailEnvConfig: EmailEnvConfig = process.env as unknown as EmailEnvConfig;
 
-// Create a nodemailer transporter using environment variables
 const transporter: Transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {

@@ -82,7 +82,6 @@ export const forgotPassword = asyncHandler(
     
 
     try {
-      // Find user by email or username
       const user = await userService.findUserByEmailOrUsername(email);
       if (!user) return res.status(404).json({ error: "User not found" });
     console.log("user",user);
@@ -91,13 +90,11 @@ export const forgotPassword = asyncHandler(
       const otp = Math.floor(100000 + Math.random() * 900000);
       console.log("otp",otp);
       
-      // Update user with OTP and expiration time
       await userService.updateUser(user.user_id, {
         reset_otp: otp,
         reset_otp_expires: Date.now() + 10 * 60 * 1000, // OTP expires in 10 minutes
       });
 
-      // Send OTP email
       await transporter.sendMail({
         from: `"Support" <${process.env.EMAIL_USER}>`,
         to: user.email,

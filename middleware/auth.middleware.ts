@@ -19,9 +19,9 @@ export const UserAuthorization = asyncHandler(
       const decoded = verifyJwtToken(token);
       console.log("Decoded:", decoded);
 
-      req.user = decoded; // Adding decoded user info to the request object
+      req.user = decoded; 
 
-      next(); // Proceed to the next middleware or route handler
+      next(); 
     } catch (error) {
       // console.error("Auth error:", error.message);
       return res.status(401).json({ message: "Invalid token" });

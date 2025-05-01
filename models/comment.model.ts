@@ -37,17 +37,17 @@ Comment.init(
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      allowNull: true, // Allow null, as it's automatically set when a new record is created
+      allowNull: true, 
     },
     updated_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      allowNull: true, // Allow null, as it's automatically set when a new record is created
+      allowNull: true, 
     },
     post_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: Post, // Reference to the Post model
+        model: Post, 
         key: "post_id",
       },
       allowNull: false,
@@ -55,24 +55,23 @@ Comment.init(
     user_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: User, // Reference to the User model
+        model: User, 
         key: "user_id",
       },
       allowNull: false,
     },
   },
   {
-    sequelize, // Sequelize instance
+    sequelize, 
     modelName: "Comment",
-    tableName: "comments", // The table name in the database
-    timestamps: true, // Automatically creates `createdAt` and `updatedAt` fields
-    underscored: true, // Convert camelCase to snake_case for column names
-    createdAt: "created_at", // Use custom name for the createdAt field
-    updatedAt: "updated_at", // Use custom name for the updatedAt field
+    tableName: "comments",
+    timestamps: true, 
+    underscored: true, 
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
-// Define the associations
 Comment.belongsTo(Post, { foreignKey: "post_id" });
 Comment.belongsTo(User, { foreignKey: "user_id" });
 

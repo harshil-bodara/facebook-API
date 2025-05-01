@@ -7,7 +7,6 @@ import PostLike from "./postlike.model";
 import FriendRequest from "./friendRequest.model";
 import Comment from "./comment.model";
 
-// Define the DB type
 interface IDb {
   sequelize: Sequelize;
   Sequelize: typeof Sequelize;
@@ -34,14 +33,13 @@ db.Comment = Comment;
 // ------------------ Associations ------------------
 
 // User - Post
-// User - Post (Make sure you don't define it again later)
 db.User.hasMany(db.Post, {
   foreignKey: "user_id",
   onDelete: "CASCADE",
 });
 db.Post.belongsTo(db.User, {
   foreignKey: "user_id",
-  as: "postOwner", // Alias should be used only once
+  as: "postOwner", 
 });
 
 

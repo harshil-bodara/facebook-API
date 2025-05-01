@@ -16,7 +16,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare email: string;
   declare password: string;
   declare first_name: string;
-  declare last_name: string;
+  declare last_name: string;                                                                                                                                
   declare profile: string;
   declare bio: string;
   declare reset_otp: string | null;
